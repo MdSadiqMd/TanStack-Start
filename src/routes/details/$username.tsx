@@ -15,13 +15,11 @@ import {
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTRPC } from "@/integrations/trpc/react";
-import type { GitHubRepo } from "@/integrations/trpc/router";
+import { GitHubRepo } from "@/types/github.types";
 
 export const Route = createFileRoute("/details/$username")({
 	component: UserDetails,
-	// Use client-side rendering for now
 	ssr: false,
-	// Add error boundary
 	errorComponent: ({ error }) => (
 		<div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-black flex items-center justify-center p-4">
 			<div className="max-w-md w-full bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 rounded-2xl p-8 text-center">
@@ -43,8 +41,6 @@ export const Route = createFileRoute("/details/$username")({
 function UserDetails() {
 	const { username } = Route.useParams();
 	const trpc = useTRPC();
-
-	// Use tRPC queries with TanStack Query optimizations
 	const userQuery = useQuery({
 		...trpc.github.getUser.queryOptions({ username }),
 		staleTime: 1000 * 60 * 5, // 5 minutes
@@ -67,7 +63,6 @@ function UserDetails() {
 	const repos = reposQuery.data;
 
 	const isLoading = userQuery.isLoading || reposQuery.isLoading;
-
 	if (isLoading) {
 		return (
 			<div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-black flex items-center justify-center p-4">
@@ -83,7 +78,6 @@ function UserDetails() {
 
 	return (
 		<div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-black p-4 md:p-8">
-			{/* Back button */}
 			<div className="max-w-6xl mx-auto mb-6">
 				<Link
 					to="/"
@@ -94,12 +88,9 @@ function UserDetails() {
 				</Link>
 			</div>
 
-			{/* Main content */}
 			<div className="max-w-6xl mx-auto space-y-6">
-				{/* User Card */}
 				<div className="bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 rounded-2xl p-8 shadow-2xl">
 					<div className="flex flex-col md:flex-row gap-8">
-						{/* Avatar */}
 						<div className="flex-shrink-0">
 							<img
 								src={user.avatar_url}
@@ -108,7 +99,6 @@ function UserDetails() {
 							/>
 						</div>
 
-						{/* User Info */}
 						<div className="flex-1 space-y-4">
 							<div>
 								<h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
@@ -131,7 +121,6 @@ function UserDetails() {
 								</p>
 							)}
 
-							{/* Meta info */}
 							<div className="flex flex-wrap gap-4 text-sm text-zinc-400">
 								{user.company && (
 									<div className="flex items-center gap-2">
@@ -177,7 +166,7 @@ function UserDetails() {
 									<div className="flex items-center gap-2">
 										<Twitter className="w-4 h-4" />
 										<a
-											href={`https://twitter.com/${user.twitter_username}`}
+											href={`https://x.com/${user.twitter_username}`}
 											target="_blank"
 											rel="noopener noreferrer"
 											className="hover:text-white transition-colors"
@@ -188,7 +177,6 @@ function UserDetails() {
 								)}
 							</div>
 
-							{/* Stats */}
 							<div className="flex flex-wrap gap-6 pt-4 border-t border-zinc-800">
 								<div className="flex items-center gap-2">
 									<Users className="w-5 h-5 text-blue-400" />
@@ -216,7 +204,6 @@ function UserDetails() {
 					</div>
 				</div>
 
-				{/* Repositories */}
 				<div className="bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 rounded-2xl p-8 shadow-2xl">
 					<div className="flex items-center justify-between mb-6">
 						<h2 className="text-2xl font-bold text-white flex items-center gap-2">
@@ -284,8 +271,7 @@ function UserDetails() {
 										<div className="flex items-center gap-1">
 											<Calendar className="w-3 h-3" />
 											<span>
-												Updated{" "}
-												{new Date(repo.updated_at).toLocaleDateString()}
+												Updated {new Date(repo.updated_at).toLocaleDateString()}
 											</span>
 										</div>
 									</div>
@@ -312,7 +298,6 @@ function UserDetails() {
 					)}
 				</div>
 
-				{/* Footer info */}
 				<div className="text-center text-zinc-500 text-sm">
 					<div className="flex items-center justify-center gap-2">
 						<Calendar className="w-4 h-4" />

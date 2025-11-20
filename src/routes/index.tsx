@@ -74,37 +74,37 @@ function Home() {
 				</div>
 
 				<form onSubmit={handleSubmit}>
-						<div className="space-y-4">
-							<div className="relative">
-								<input
-									type="text"
-									value={githubUrl}
-									onChange={(e) => {
-										setGithubUrl(e.target.value);
-										setError("");
-									}}
-									onKeyDown={handleKeyDown}
-									placeholder="Enter GitHub username or URL..."
-									className="w-full px-6 py-4 bg-zinc-800/50 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-lg"
-									autoFocus
-								/>
-								<button
-									type="submit"
-									className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-									disabled={!githubUrl.trim()}
-								>
-									<ArrowRight className="w-6 h-6" />
-								</button>
-							</div>
-
-							{error && (
-								<p className="text-red-400 text-sm flex items-center gap-2">
-									<span className="inline-block w-1 h-1 rounded-full bg-red-400" />
-									{error}
-								</p>
-							)}
+					<div className="space-y-4">
+						<div className="relative">
+							<input
+								type="text"
+								value={githubUrl}
+								onChange={(e) => {
+									setGithubUrl(e.target.value);
+									setError("");
+								}}
+								onKeyDown={handleKeyDown}
+								placeholder="Enter GitHub username or URL..."
+								className="w-full px-6 py-4 bg-zinc-800/50 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-lg"
+								autoFocus
+							/>
+							<button
+								type="submit"
+								className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+								disabled={!githubUrl.trim()}
+							>
+								<ArrowRight className="w-6 h-6" />
+							</button>
 						</div>
-					</form>
+
+						{error && (
+							<p className="text-red-400 text-sm flex items-center gap-2">
+								<span className="inline-block w-1 h-1 rounded-full bg-red-400" />
+								{error}
+							</p>
+						)}
+					</div>
+				</form>
 			</div>
 		</div>
 	);
