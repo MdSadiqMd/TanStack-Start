@@ -29,6 +29,13 @@ export function getContext() {
 		defaultOptions: {
 			dehydrate: { serializeData: superjson.serialize },
 			hydrate: { deserializeData: superjson.deserialize },
+			queries: {
+				staleTime: 1000 * 60, // 1 minute default
+				gcTime: 1000 * 60 * 5, // 5 minutes (formerly cacheTime)
+				refetchOnWindowFocus: false, // Prevent unnecessary refetches
+				refetchOnMount: false, // Use cached data when available
+				retry: 1, // Only retry once on failure
+			},
 		},
 	});
 
