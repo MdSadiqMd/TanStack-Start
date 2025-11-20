@@ -1,20 +1,21 @@
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
-	MapPin,
-	Building,
-	Star,
-	GitFork,
 	ArrowLeft,
 	ArrowRight,
-	ExternalLink,
-	Mail,
-	ShieldCheck,
-	Globe,
 	BookOpen,
+	Building,
+	ExternalLink,
+	GitFork,
+	Globe,
+	Mail,
+	MapPin,
+	ShieldCheck,
+	Star,
 } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+
 import { useTRPC } from "@/integrations/trpc/react";
-import { GitHubRepo } from "@/types/github.types";
+import type { GitHubRepo } from "@/types/github.types";
 
 export const Route = createFileRoute("/details/$username")({
 	component: UserDetails,

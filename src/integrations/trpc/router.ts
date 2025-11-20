@@ -1,10 +1,9 @@
-import { z } from "zod";
-import axios from "axios";
-
-import { createTRPCRouter, publicProcedure } from "./init";
-
 import type { TRPCRouterRecord } from "@trpc/server";
-import { GitHubUserSchema, GitHubRepoSchema } from "@/types/github.types";
+import axios from "axios";
+import { z } from "zod";
+
+import { GitHubRepoSchema, GitHubUserSchema } from "@/types/github.types";
+import { createTRPCRouter, publicProcedure } from "./init";
 
 const githubAPI = axios.create({
 	baseURL: "https://api.github.com",

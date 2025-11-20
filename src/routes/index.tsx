@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, useCallback } from "react";
-import { ArrowRight, Search, Command, Sparkles } from "lucide-react";
+import { ArrowRight, Command, Search, Sparkles } from "lucide-react";
+import { useCallback, useState } from "react";
 
 export const Route = createFileRoute("/")({ component: Home });
 
@@ -17,7 +17,7 @@ function Home() {
 		}
 
 		const patterns = [
-			/github\.com\/([^\/\?#]+)/i,
+			/github\.com\/([^/?#]+)/i,
 			/^@?([a-z0-9](?:[a-z0-9]|-(?=[a-z0-9])){0,38})$/i,
 		];
 		for (const pattern of patterns) {
