@@ -16,6 +16,7 @@ import type { QueryClient } from "@tanstack/react-query";
 
 import type { TRPCRouter } from "@/integrations/trpc/router";
 import type { TRPCOptionsProxy } from "@trpc/tanstack-react-query";
+import { Input } from "@/components/ui/input";
 
 interface MyRouterContext {
 	queryClient: QueryClient;
@@ -69,6 +70,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 						TanStackQueryDevtools,
 					]}
 				/>
+				<div className="w-full max-w-2xl p-8 rounded-xl backdrop-blur-md bg-black/50 shadow-xl border-8 border-black/10">
+					Hello World
+					<Input type="text" placeholder="Search" className="w-full" />
+				</div>
 				<Scripts />
 			</body>
 		</html>
