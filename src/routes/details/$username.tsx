@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import {
 	MapPin,
 	Building,
-	BookOpen,
 	Star,
 	GitFork,
 	ArrowLeft,
@@ -11,6 +10,7 @@ import {
 	Mail,
 	ShieldCheck,
 	Globe,
+	BookOpen,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTRPC } from "@/integrations/trpc/react";
@@ -40,6 +40,23 @@ export const Route = createFileRoute("/details/$username")({
 		</div>
 	),
 });
+
+const getLanguageColor = (language: string | null) => {
+	const colors: Record<string, string> = {
+		TypeScript: "bg-blue-500",
+		JavaScript: "bg-yellow-400",
+		Python: "bg-green-500",
+		Java: "bg-orange-500",
+		Go: "bg-cyan-500",
+		Rust: "bg-orange-200",
+		PHP: "bg-purple-500",
+		HTML: "bg-orange-600",
+		CSS: "bg-blue-600",
+		Vue: "bg-green-400",
+		Swift: "bg-orange-400",
+	};
+	return colors[language || ""] || "bg-zinc-400";
+};
 
 function UserDetails() {
 	const { username } = Route.useParams();
@@ -239,47 +256,43 @@ function UserDetails() {
 										href={repo.html_url}
 										target="_blank"
 										rel="noopener noreferrer"
-										className="group glass-card rounded-2xl p-6 hover:border-white/20 hover:bg-white/[0.02] transition-all duration-300 hover:-translate-y-1"
+										className="group glass-card rounded-xl p-5 hover:border-blue-500/30 hover:bg-blue-500/[0.02] transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between h-full"
 										style={{ animationDelay: `${i * 100}ms` }}
 									>
-										<div className="flex justify-between items-start mb-4">
-											<div className="p-2 rounded-lg bg-white/5 border border-white/5 group-hover:border-white/10 transition-colors">
-												<BookOpen className="w-5 h-5 text-zinc-400 group-hover:text-white transition-colors" />
+										<div className="mb-4">
+											<div className="flex items-center justify-between mb-2">
+												<h3 className="text-lg font-semibold text-blue-400 group-hover:text-blue-300 transition-colors line-clamp-1 tracking-tight">
+													{repo.name}
+												</h3>
+												<div className="text-[10px] text-zinc-600 font-mono uppercase tracking-wider whitespace-nowrap">
+													{new Date(repo.updated_at).toLocaleDateString(
+														undefined,
+														{ month: "short", day: "numeric" },
+													)}
+												</div>
 											</div>
-											<div className="flex items-center gap-3 text-xs text-zinc-500 font-medium">
-												{repo.language && (
-													<span className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/5 border border-white/5">
-														<span className="w-1.5 h-1.5 rounded-full bg-white" />
-														{repo.language}
-													</span>
-												)}
-											</div>
+
+											<p className="text-sm text-zinc-400 line-clamp-2 leading-relaxed h-10">
+												{repo.description || "No description provided."}
+											</p>
 										</div>
 
-										<h3 className="text-lg font-bold text-white mb-2 group-hover:text-blue-400 transition-colors line-clamp-1">
-											{repo.name}
-										</h3>
-
-										<p className="text-sm text-zinc-400 mb-6 line-clamp-2 h-10 leading-relaxed">
-											{repo.description || "No description provided."}
-										</p>
-
-										<div className="flex items-center justify-between pt-4 border-t border-white/5">
-											<div className="flex items-center gap-4 text-xs text-zinc-500 font-medium">
-												<div className="flex items-center gap-1.5 hover:text-white transition-colors">
-													<Star className="w-3.5 h-3.5" />
-													{repo.stargazers_count}
+										<div className="flex items-center gap-4 text-xs font-medium text-zinc-500 pt-4 border-t border-white/5 mt-auto">
+											{repo.language && (
+												<div className="flex items-center gap-1.5 text-zinc-300">
+													<span
+														className={`w-2 h-2 rounded-full ${getLanguageColor(repo.language)}`}
+													/>
+													{repo.language}
 												</div>
-												<div className="flex items-center gap-1.5 hover:text-white transition-colors">
-													<GitFork className="w-3.5 h-3.5" />
-													{repo.forks_count}
-												</div>
+											)}
+											<div className="flex items-center gap-1.5 hover:text-zinc-300 transition-colors">
+												<Star className="w-3.5 h-3.5" />
+												{repo.stargazers_count}
 											</div>
-											<div className="text-[10px] text-zinc-600 font-mono uppercase tracking-wider">
-												{new Date(repo.updated_at).toLocaleDateString(
-													undefined,
-													{ month: "short", day: "numeric" },
-												)}
+											<div className="flex items-center gap-1.5 hover:text-zinc-300 transition-colors">
+												<GitFork className="w-3.5 h-3.5" />
+												{repo.forks_count}
 											</div>
 										</div>
 									</a>
