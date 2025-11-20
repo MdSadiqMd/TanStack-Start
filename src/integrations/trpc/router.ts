@@ -1,33 +1,34 @@
 import { z } from "zod";
+import axios from "axios";
 
 import { createTRPCRouter, publicProcedure } from "./init";
 
 import type { TRPCRouterRecord } from "@trpc/server";
 import { GitHubUserSchema, GitHubRepoSchema } from "@/types/github.types";
 
+const githubAPI = axios.create({
+	baseURL: "https://api.github.com",
+	headers: {
+		Accept: "application/vnd.github.v3+json",
+		"User-Agent": "TanStack-Start-App",
+	},
+});
+
 const githubRouter = {
 	getUser: publicProcedure
 		.input(z.object({ username: z.string().min(1) }))
 		.query(async ({ input }) => {
-			const response = await fetch(
-				`https://api.github.com/users/${input.username}`,
-				{
-					headers: {
-						Accept: "application/vnd.github.v3+json",
-						"User-Agent": "TanStack-Start-App",
-					},
-				},
-			);
-
-			if (!response.ok) {
-				if (response.status === 404) {
-					throw new Error("User not found");
+			try {
+				const response = await githubAPI.get(`/users/${input.username}`);
+				return GitHubUserSchema.parse(response.data);
+			} catch (error) {
+				if (axios.isAxiosError(error)) {
+					if (error.response?.status === 404) {
+						throw new Error("User not found");
+					}
 				}
 				throw new Error("Failed to fetch user data");
 			}
-
-			const data = await response.json();
-			return GitHubUserSchema.parse(data);
 		}),
 
 	getUserRepos: publicProcedure
@@ -39,30 +40,22 @@ const githubRouter = {
 			}),
 		)
 		.query(async ({ input }) => {
-			const params = new URLSearchParams({
-				sort: input.sort || "updated",
-				per_page: String(input.per_page || 6),
-			});
-
-			const response = await fetch(
-				`https://api.github.com/users/${input.username}/repos?${params}`,
-				{
-					headers: {
-						Accept: "application/vnd.github.v3+json",
-						"User-Agent": "TanStack-Start-App",
+			try {
+				const response = await githubAPI.get(`/users/${input.username}/repos`, {
+					params: {
+						sort: input.sort || "updated",
+						per_page: input.per_page || 6,
 					},
-				},
-			);
-
-			if (!response.ok) {
-				if (response.status === 404) {
-					throw new Error("User not found");
+				});
+				return z.array(GitHubRepoSchema).parse(response.data);
+			} catch (error) {
+				if (axios.isAxiosError(error)) {
+					if (error.response?.status === 404) {
+						throw new Error("User not found");
+					}
 				}
 				throw new Error("Failed to fetch repositories");
 			}
-
-			const data = await response.json();
-			return z.array(GitHubRepoSchema).parse(data);
 		}),
 } satisfies TRPCRouterRecord;
 
