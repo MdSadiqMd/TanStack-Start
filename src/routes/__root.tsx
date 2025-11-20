@@ -5,6 +5,7 @@ import {
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { TanStackDevtools } from "@tanstack/react-devtools";
+import { AuroraBackground } from "@/components/AuroraBackground";
 
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 
@@ -56,8 +57,12 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			<head>
 				<HeadContent />
 			</head>
-			<body className="bg-zinc-950 text-white min-h-screen antialiased">
-				{children}
+			<body className="bg-black text-zinc-100 min-h-screen antialiased selection:bg-white/20 selection:text-white overflow-x-hidden">
+				<div className="noise-bg" />
+				<AuroraBackground />
+				<div className="relative z-10 min-h-screen flex flex-col">
+					{children}
+				</div>
 				<TanStackDevtools
 					config={{
 						position: "bottom-right",

@@ -1,17 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
 	MapPin,
-	Link2,
-	Twitter,
 	Building,
-	Users,
 	BookOpen,
 	Star,
 	GitFork,
-	Calendar,
 	ArrowLeft,
+	ArrowRight,
 	ExternalLink,
 	Mail,
+	ShieldCheck,
+	Globe,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTRPC } from "@/integrations/trpc/react";
@@ -21,17 +20,21 @@ export const Route = createFileRoute("/details/$username")({
 	component: UserDetails,
 	ssr: false,
 	errorComponent: ({ error }) => (
-		<div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-black flex items-center justify-center p-4">
-			<div className="max-w-md w-full bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 rounded-2xl p-8 text-center">
-				<div className="text-red-400 text-5xl mb-4">⚠️</div>
-				<h2 className="text-2xl font-bold text-white mb-2">User Not Found</h2>
-				<p className="text-zinc-400 mb-6">{error.message}</p>
+		<div className="min-h-screen flex items-center justify-center p-4">
+			<div className="max-w-md w-full glass-card rounded-2xl p-8 text-center space-y-6 animate-in fade-in zoom-in-95 duration-500">
+				<div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 text-red-400">
+					<ShieldCheck className="w-8 h-8" />
+				</div>
+				<div>
+					<h2 className="text-2xl font-bold text-white mb-2">User Not Found</h2>
+					<p className="text-zinc-500 leading-relaxed">{error.message}</p>
+				</div>
 				<Link
 					to="/"
-					className="inline-flex items-center gap-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+					className="inline-flex items-center gap-2 px-6 py-3 bg-white text-black rounded-xl hover:scale-105 active:scale-95 transition-all duration-200 font-medium shadow-lg shadow-white/10"
 				>
 					<ArrowLeft className="w-4 h-4" />
-					Back to Home
+					Back to Search
 				</Link>
 			</div>
 		</div>
@@ -43,8 +46,8 @@ function UserDetails() {
 	const trpc = useTRPC();
 	const userQuery = useQuery({
 		...trpc.github.getUser.queryOptions({ username }),
-		staleTime: 1000 * 60 * 5, // 5 minutes
-		gcTime: 1000 * 60 * 30, // 30 minutes (formerly cacheTime)
+		staleTime: 1000 * 60 * 5,
+		gcTime: 1000 * 60 * 30,
 		retry: 1,
 	});
 
@@ -65,10 +68,18 @@ function UserDetails() {
 	const isLoading = userQuery.isLoading || reposQuery.isLoading;
 	if (isLoading) {
 		return (
-			<div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-black flex items-center justify-center p-4">
-				<div className="text-center">
-					<div className="inline-block w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4" />
-					<p className="text-zinc-400">Loading user data...</p>
+			<div className="min-h-screen flex items-center justify-center">
+				<div className="flex flex-col items-center gap-6">
+					<div className="relative w-16 h-16">
+						<div className="absolute inset-0 rounded-full border-t-2 border-white animate-spin" />
+						<div
+							className="absolute inset-2 rounded-full border-t-2 border-white/40 animate-spin reverse"
+							style={{ animationDirection: "reverse", animationDuration: "1s" }}
+						/>
+					</div>
+					<p className="text-zinc-500 text-sm font-medium tracking-wide animate-pulse uppercase">
+						Fetching Data...
+					</p>
 				</div>
 			</div>
 		);
@@ -77,238 +88,209 @@ function UserDetails() {
 	if (!user) return null;
 
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-black p-4 md:p-8">
-			<div className="max-w-6xl mx-auto mb-6">
-				<Link
-					to="/"
-					className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors"
-				>
-					<ArrowLeft className="w-4 h-4" />
-					Back to Search
-				</Link>
-			</div>
+		<div className="min-h-screen p-6 md:p-12 lg:p-16 animate-in fade-in slide-in-from-bottom-8 duration-700">
+			<div className="max-w-7xl mx-auto">
+				<div className="mb-12 flex items-center justify-between">
+					<Link
+						to="/"
+						className="group inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-zinc-400 hover:text-white transition-all duration-300 backdrop-blur-md"
+					>
+						<ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-300" />
+						<span className="text-sm font-medium">Back</span>
+					</Link>
 
-			<div className="max-w-6xl mx-auto space-y-6">
-				<div className="bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 rounded-2xl p-8 shadow-2xl">
-					<div className="flex flex-col md:flex-row gap-8">
-						<div className="flex-shrink-0">
-							<img
-								src={user.avatar_url}
-								alt={user.login}
-								className="w-32 h-32 md:w-40 md:h-40 rounded-2xl border-4 border-zinc-800 shadow-xl"
-							/>
+					<div className="text-xs font-mono text-zinc-600">ID: {user.id}</div>
+				</div>
+
+				<div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16">
+					<div className="lg:col-span-4 space-y-8">
+						<div className="glass-card rounded-3xl p-8 sticky top-8 transition-all duration-500 hover:shadow-[0_8px_40px_rgba(255,255,255,0.05)]">
+							<div className="relative mx-auto w-40 h-40 mb-8 group">
+								<div className="absolute inset-0 rounded-full bg-white/20 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+								<img
+									src={user.avatar_url}
+									alt={user.login}
+									className="relative w-full h-full rounded-full border-2 border-white/10 shadow-2xl transform transition-transform duration-500 group-hover:scale-105"
+								/>
+								<div className="absolute bottom-2 right-2 w-5 h-5 bg-green-500 border-4 border-black rounded-full" />
+							</div>
+
+							<div className="text-center space-y-6">
+								<div>
+									<h1 className="text-3xl font-bold text-white tracking-tight mb-2">
+										{user.name || user.login}
+									</h1>
+									<a
+										href={user.html_url}
+										target="_blank"
+										rel="noopener noreferrer"
+										className="inline-flex items-center gap-1.5 text-zinc-400 hover:text-white transition-colors duration-200"
+									>
+										@{user.login}
+										<ExternalLink className="w-3 h-3" />
+									</a>
+								</div>
+
+								{user.bio && (
+									<p className="text-zinc-400 leading-relaxed text-sm border-t border-white/5 pt-6">
+										{user.bio}
+									</p>
+								)}
+
+								<div className="grid grid-cols-3 gap-2 py-6 border-y border-white/5">
+									<div className="text-center p-2 rounded-lg hover:bg-white/5 transition-colors cursor-default">
+										<div className="text-lg font-bold text-white">
+											{user.followers.toLocaleString()}
+										</div>
+										<div className="text-[10px] uppercase tracking-wider text-zinc-500">
+											Followers
+										</div>
+									</div>
+									<div className="text-center p-2 rounded-lg hover:bg-white/5 transition-colors cursor-default">
+										<div className="text-lg font-bold text-white">
+											{user.following.toLocaleString()}
+										</div>
+										<div className="text-[10px] uppercase tracking-wider text-zinc-500">
+											Following
+										</div>
+									</div>
+									<div className="text-center p-2 rounded-lg hover:bg-white/5 transition-colors cursor-default">
+										<div className="text-lg font-bold text-white">
+											{user.public_repos}
+										</div>
+										<div className="text-[10px] uppercase tracking-wider text-zinc-500">
+											Repos
+										</div>
+									</div>
+								</div>
+
+								<div className="space-y-4 text-sm text-left">
+									{user.company && (
+										<div className="flex items-center gap-3 text-zinc-400">
+											<Building className="w-4 h-4 text-zinc-500" />
+											<span className="truncate">{user.company}</span>
+										</div>
+									)}
+									{user.location && (
+										<div className="flex items-center gap-3 text-zinc-400">
+											<MapPin className="w-4 h-4 text-zinc-500" />
+											<span>{user.location}</span>
+										</div>
+									)}
+									{user.email && (
+										<div className="flex items-center gap-3 text-zinc-400">
+											<Mail className="w-4 h-4 text-zinc-500" />
+											<a
+												href={`mailto:${user.email}`}
+												className="hover:text-white transition-colors truncate"
+											>
+												{user.email}
+											</a>
+										</div>
+									)}
+									{user.blog && (
+										<div className="flex items-center gap-3 text-zinc-400">
+											<Globe className="w-4 h-4 text-zinc-500" />
+											<a
+												href={
+													user.blog.startsWith("http")
+														? user.blog
+														: `https://${user.blog}`
+												}
+												target="_blank"
+												rel="noreferrer"
+												className="hover:text-white transition-colors truncate"
+											>
+												{user.blog}
+											</a>
+										</div>
+									)}
+								</div>
+							</div>
 						</div>
+					</div>
 
-						<div className="flex-1 space-y-4">
+					<div className="lg:col-span-8 space-y-6">
+						<div className="flex items-end justify-between mb-8">
 							<div>
-								<h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
-									{user.name || user.login}
-								</h1>
-								<a
-									href={user.html_url}
-									target="_blank"
-									rel="noopener noreferrer"
-									className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors"
-								>
-									@{user.login}
-									<ExternalLink className="w-4 h-4" />
-								</a>
-							</div>
-
-							{user.bio && (
-								<p className="text-zinc-300 text-lg leading-relaxed">
-									{user.bio}
+								<h2 className="text-2xl font-bold text-white mb-1">
+									Latest Activity
+								</h2>
+								<p className="text-zinc-500 text-sm">
+									Recently updated repositories
 								</p>
-							)}
-
-							<div className="flex flex-wrap gap-4 text-sm text-zinc-400">
-								{user.company && (
-									<div className="flex items-center gap-2">
-										<Building className="w-4 h-4" />
-										<span>{user.company}</span>
-									</div>
-								)}
-								{user.location && (
-									<div className="flex items-center gap-2">
-										<MapPin className="w-4 h-4" />
-										<span>{user.location}</span>
-									</div>
-								)}
-								{user.email && (
-									<div className="flex items-center gap-2">
-										<Mail className="w-4 h-4" />
-										<a
-											href={`mailto:${user.email}`}
-											className="hover:text-white transition-colors"
-										>
-											{user.email}
-										</a>
-									</div>
-								)}
-								{user.blog && (
-									<div className="flex items-center gap-2">
-										<Link2 className="w-4 h-4" />
-										<a
-											href={
-												user.blog.startsWith("http")
-													? user.blog
-													: `https://${user.blog}`
-											}
-											target="_blank"
-											rel="noopener noreferrer"
-											className="hover:text-white transition-colors"
-										>
-											{user.blog}
-										</a>
-									</div>
-								)}
-								{user.twitter_username && (
-									<div className="flex items-center gap-2">
-										<Twitter className="w-4 h-4" />
-										<a
-											href={`https://x.com/${user.twitter_username}`}
-											target="_blank"
-											rel="noopener noreferrer"
-											className="hover:text-white transition-colors"
-										>
-											@{user.twitter_username}
-										</a>
-									</div>
-								)}
 							</div>
-
-							<div className="flex flex-wrap gap-6 pt-4 border-t border-zinc-800">
-								<div className="flex items-center gap-2">
-									<Users className="w-5 h-5 text-blue-400" />
-									<span className="text-white font-semibold">
-										{user.followers.toLocaleString()}
-									</span>
-									<span className="text-zinc-400">followers</span>
-								</div>
-								<div className="flex items-center gap-2">
-									<Users className="w-5 h-5 text-green-400" />
-									<span className="text-white font-semibold">
-										{user.following.toLocaleString()}
-									</span>
-									<span className="text-zinc-400">following</span>
-								</div>
-								<div className="flex items-center gap-2">
-									<BookOpen className="w-5 h-5 text-purple-400" />
-									<span className="text-white font-semibold">
-										{user.public_repos.toLocaleString()}
-									</span>
-									<span className="text-zinc-400">repositories</span>
-								</div>
-							</div>
+							<a
+								href={`${user.html_url}?tab=repositories`}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="group flex items-center gap-2 text-sm font-medium text-zinc-400 hover:text-white transition-colors"
+							>
+								View All
+								<ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+							</a>
 						</div>
-					</div>
-				</div>
 
-				<div className="bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 rounded-2xl p-8 shadow-2xl">
-					<div className="flex items-center justify-between mb-6">
-						<h2 className="text-2xl font-bold text-white flex items-center gap-2">
-							<BookOpen className="w-6 h-6 text-purple-400" />
-							Recent Repositories
-						</h2>
-						<a
-							href={`${user.html_url}?tab=repositories`}
-							target="_blank"
-							rel="noopener noreferrer"
-							className="text-blue-400 hover:text-blue-300 text-sm flex items-center gap-1"
-						>
-							View all
-							<ExternalLink className="w-3 h-3" />
-						</a>
-					</div>
-
-					{reposQuery.isLoading ? (
-						<div className="text-center py-8">
-							<div className="inline-block w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-2" />
-							<p className="text-zinc-400 text-sm">Loading repositories...</p>
-						</div>
-					) : repos && repos.length > 0 ? (
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-							{repos.map((repo: GitHubRepo) => (
-								<a
-									key={repo.id}
-									href={repo.html_url}
-									target="_blank"
-									rel="noopener noreferrer"
-									className="bg-zinc-800/50 border border-zinc-700 hover:border-zinc-600 rounded-xl p-5 transition-all hover:shadow-lg hover:shadow-blue-500/10 group"
-								>
-									<div className="flex items-start justify-between mb-3">
-										<h3 className="text-lg font-semibold text-white group-hover:text-blue-400 transition-colors flex items-center gap-2">
-											{repo.name}
-											{repo.fork && (
-												<span className="text-xs bg-zinc-700 px-2 py-0.5 rounded text-zinc-400">
-													Fork
-												</span>
-											)}
-										</h3>
-									</div>
-
-									{repo.description && (
-										<p className="text-zinc-400 text-sm mb-3 line-clamp-2">
-											{repo.description}
-										</p>
-									)}
-
-									<div className="flex items-center gap-4 text-xs text-zinc-500">
-										{repo.language && (
-											<div className="flex items-center gap-1">
-												<span className="w-3 h-3 rounded-full bg-blue-400" />
-												<span>{repo.language}</span>
+							{repos && repos.length > 0 ? (
+								repos.map((repo: GitHubRepo, i) => (
+									<a
+										key={repo.id}
+										href={repo.html_url}
+										target="_blank"
+										rel="noopener noreferrer"
+										className="group glass-card rounded-2xl p-6 hover:border-white/20 hover:bg-white/[0.02] transition-all duration-300 hover:-translate-y-1"
+										style={{ animationDelay: `${i * 100}ms` }}
+									>
+										<div className="flex justify-between items-start mb-4">
+											<div className="p-2 rounded-lg bg-white/5 border border-white/5 group-hover:border-white/10 transition-colors">
+												<BookOpen className="w-5 h-5 text-zinc-400 group-hover:text-white transition-colors" />
 											</div>
-										)}
-										<div className="flex items-center gap-1">
-											<Star className="w-3 h-3" />
-											<span>{repo.stargazers_count.toLocaleString()}</span>
+											<div className="flex items-center gap-3 text-xs text-zinc-500 font-medium">
+												{repo.language && (
+													<span className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/5 border border-white/5">
+														<span className="w-1.5 h-1.5 rounded-full bg-white" />
+														{repo.language}
+													</span>
+												)}
+											</div>
 										</div>
-										<div className="flex items-center gap-1">
-											<GitFork className="w-3 h-3" />
-											<span>{repo.forks_count.toLocaleString()}</span>
-										</div>
-										<div className="flex items-center gap-1">
-											<Calendar className="w-3 h-3" />
-											<span>
-												Updated {new Date(repo.updated_at).toLocaleDateString()}
-											</span>
-										</div>
-									</div>
 
-									{repo.topics && repo.topics.length > 0 && (
-										<div className="flex flex-wrap gap-1 mt-3">
-											{repo.topics.slice(0, 3).map((topic: string) => (
-												<span
-													key={topic}
-													className="text-xs bg-blue-500/10 text-blue-400 px-2 py-1 rounded"
-												>
-													{topic}
-												</span>
-											))}
+										<h3 className="text-lg font-bold text-white mb-2 group-hover:text-blue-400 transition-colors line-clamp-1">
+											{repo.name}
+										</h3>
+
+										<p className="text-sm text-zinc-400 mb-6 line-clamp-2 h-10 leading-relaxed">
+											{repo.description || "No description provided."}
+										</p>
+
+										<div className="flex items-center justify-between pt-4 border-t border-white/5">
+											<div className="flex items-center gap-4 text-xs text-zinc-500 font-medium">
+												<div className="flex items-center gap-1.5 hover:text-white transition-colors">
+													<Star className="w-3.5 h-3.5" />
+													{repo.stargazers_count}
+												</div>
+												<div className="flex items-center gap-1.5 hover:text-white transition-colors">
+													<GitFork className="w-3.5 h-3.5" />
+													{repo.forks_count}
+												</div>
+											</div>
+											<div className="text-[10px] text-zinc-600 font-mono uppercase tracking-wider">
+												{new Date(repo.updated_at).toLocaleDateString(
+													undefined,
+													{ month: "short", day: "numeric" },
+												)}
+											</div>
 										</div>
-									)}
-								</a>
-							))}
+									</a>
+								))
+							) : (
+								<div className="col-span-full flex flex-col items-center justify-center py-24 glass-card rounded-2xl border-dashed">
+									<BookOpen className="w-12 h-12 text-zinc-700 mb-4" />
+									<p className="text-zinc-500">No public repositories found</p>
+								</div>
+							)}
 						</div>
-					) : (
-						<p className="text-zinc-400 text-center py-8">
-							No public repositories found
-						</p>
-					)}
-				</div>
-
-				<div className="text-center text-zinc-500 text-sm">
-					<div className="flex items-center justify-center gap-2">
-						<Calendar className="w-4 h-4" />
-						<span>
-							Joined GitHub on{" "}
-							{new Date(user.created_at).toLocaleDateString("en-US", {
-								year: "numeric",
-								month: "long",
-								day: "numeric",
-							})}
-						</span>
 					</div>
 				</div>
 			</div>
