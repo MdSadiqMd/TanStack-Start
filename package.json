@@ -10,7 +10,9 @@
     "format": "biome format",
     "lint": "biome lint",
     "check": "biome check",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "npm run build && wrangler deploy",
+    "cf-typegen": "wrangler types"
   },
   "dependencies": {
     "@octokit/rest": "^22.0.1",
